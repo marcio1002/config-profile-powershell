@@ -1,3 +1,8 @@
+#  ---------------------
+# |                     |
+# |  POWERSHELL 7.4.*   |
+# |                     |
+#  ---------------------
 #Configuration Autocompletion keys
 Set-PSReadLineOption -HistoryNoDuplicates:$true -HistorySearchCursorMovesToEnd:$true
 Set-PSReadLineOption -HistorySearchCursorMovesToEnd:$true
