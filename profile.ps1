@@ -3,7 +3,6 @@ Import-Module PSReadLine -RequiredVersion 2.3.5
 Import-Module TrustedPlatformModule
 
 Set-PSReadLineOption -ContinuationPrompt '-> '
-Set-PSReadLineOption -PromptText '-> '
 Set-PSReadLineOption -HistoryNoDuplicates:$True
 Set-PSReadLineOption -HistorySearchCursorMovesToEnd:$True
 Set-PSReadLineOption -EditMode Emacs
@@ -34,17 +33,61 @@ Set-PSReadLineOption -Colors @{
 Remove-PSReadLineKeyHandler -Key Ctrl+C
 Remove-PSReadLineKeyHandler -Key Shift+Enter
 
-Set-PSReadLineKeyHandler -Key Ctrl+c, Ctrl+C -Function CancelLine
 Set-PSReadLineKeyHandler -Key Tab -Function MenuComplete
 Set-PSReadLineKeyHandler -Key UpArrow -Function HistorySearchBackward
 Set-PSReadLineKeyHandler -Key DownArrow -Function HistorySearchForward
+Set-PSReadLineKeyHandler -Key Ctrl+c, Ctrl+C -Function CancelLine
 Set-PSReadLineKeyHandler -Chord Ctrl+Shift+a, Ctrl+Shift+A -Function SelectAll
+Set-PSReadLineKeyHandler -Chord Ctrl+Shift+c, Ctrl+Shift+C -Function Copy
+Set-PSReadLineKeyHandler -Chord Ctrl+Shift+v, Ctrl+Shift+V -Function Paste 
 Set-PSReadLineKeyHandler -Chord Ctrl+Shift+l, Ctrl+Shift+L -Function RevertLine
+Set-PSReadLineKeyHandler -Chord Ctrl+z, Ctrl+Z -Function Undo
 Set-PSReadLineKeyHandler -Chord Ctrl+LeftArrow -Function BackwardWord
 Set-PSReadLineKeyHandler -Chord Ctrl+RightArrow -Function NextWord
 Set-PSReadLineKeyHandler -Chord Ctrl+Shift+Backspace -Function BackwardKillWord
 Set-PSReadLineKeyHandler -Chord Ctrl+Enter -Function AddLine
-Set-PSReadLineKeyHandler -Chord Ctrl+z, Ctrl+Z -Function Undo
+
+
+# Customização do prompt
+function prompt {
+    # Código ASCII para escape
+    $esc = "`e"
+    $escEnd = "`e[0m"
+
+    # Simbolos
+    $curvaLeftTop = "${esc}[90m┌─${escEnd}"
+    $curvaRightTop = "${esc}[90m─┐${escEnd}"
+    $indicator = "${esc}[96m➜${escEnd}"
+
+
+    # Cores esquerda
+    $simbolStart = "${esc}[92m►${escEnd}"
+    $bgLeft = "${esc}[92m░${escEnd}"
+    $bgLeftSecond = "${esc}[92m▒${escEnd}"
+    $bgLeftThird = "${esc}[37;42m ${escEnd}"
+    # Cores direita
+    $simbolEnd = "${esc}[92m◀${escEnd}";
+    $bgRight = "${esc}[92;42m░${escEnd}"
+    $bgRightSecond = "${esc}[32m▒${escEnd}"
+
+
+    $pathCurrent = Get-Location | Split-Path -Leaf
+    $branch = git branch --show-current 
+    $leftLength = $pathCurrent.Length + 9
+    $rightLength = $branch.Length + 10
+    $points = "•" * ($host.UI.RawUI.WindowSize.Width - $leftLength - $rightLength)
+
+    $colorPoints = "${esc}[90m $points ${escEnd}"
+    $colorPathCurrent = "${esc}[30;102m $pathCurrent ${escEnd}"
+    $colorBranch = "${esc}[20;102m $branch ${escEnd}"
+
+    
+    $customPrompt = "${curvaLeftTop} ${bgLeft}${bgLeftSecond}${bgLeftThird}${colorPathCurrent}${simbolStart}${colorPoints}"
+    $customPrompt += "${simbolEnd}${colorBranch}${bgRight}${bgRightSecond} ${curvaRightTop}`n"
+    $customPrompt += "${indicator} "
+
+    "$customPrompt"
+}
 
 # User Alias
 . $PSScriptRoot\Modules\user-aliases\alias.ps1
