@@ -1,2 +1,5 @@
 ## Profile PowerShell
-<img src="./ps-profile-config.png" />
+
+PowerShell profile settings with PsReadLine and prompt customization
+
+<img src="./preview.png" />
