@@ -79,7 +79,7 @@ function prompt {
 
     $colorPoints = "${esc}[90m $points ${escEnd}"
     $colorPathCurrent = "${esc}[30;102m $pathCurrent ${escEnd}"
-    $colorBranch = "${esc}[20;102m $branch ${escEnd}"
+    $colorBranch = "${esc}[30;1;102m $branch ${escEnd}"
 
     
     $customPrompt = "${curvaLeftTop} ${bgLeft}${bgLeftSecond}${bgLeftThird}${colorPathCurrent}${simbolStart}${colorPoints}"
