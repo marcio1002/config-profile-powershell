@@ -1,5 +1,5 @@
 #Configuration Autocompletion keys
-Import-Module PSReadLine -RequiredVersion 2.3.4
+Import-Module PSReadLine -RequiredVersion 2.3.5
 Import-Module TrustedPlatformModule
 
 Set-PSReadLineOption -ContinuationPrompt '-> '
@@ -44,7 +44,7 @@ Set-PSReadLineKeyHandler -Chord Ctrl+LeftArrow -Function BackwardWord
 Set-PSReadLineKeyHandler -Chord Ctrl+RightArrow -Function NextWord
 Set-PSReadLineKeyHandler -Chord Ctrl+Shift+Backspace -Function BackwardKillWord
 Set-PSReadLineKeyHandler -Chord Ctrl+Enter -Function AddLine
-Set-PSReadLineKeyHandler -Chord Ctrl+z, Ctral+Z -Function Undo
+Set-PSReadLineKeyHandler -Chord Ctrl+z, Ctrl+Z -Function Undo
 
 # User Alias
 . $PSScriptRoot\Modules\user-aliases\alias.ps1
