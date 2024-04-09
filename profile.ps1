@@ -1,8 +1,9 @@
 #Configuration Autocompletion keys
-Import-Module PSReadLine -RequiredVersion 2.2.6
+Import-Module PSReadLine -RequiredVersion 2.3.4
+Import-Module TrustedPlatformModule
 
-Set-PSReadLineOption -ContinuationPrompt '->'
-Set-PSReadLineOption -PromptText '->'
+Set-PSReadLineOption -ContinuationPrompt '-> '
+Set-PSReadLineOption -PromptText '-> '
 Set-PSReadLineOption -HistoryNoDuplicates:$True
 Set-PSReadLineOption -HistorySearchCursorMovesToEnd:$True
 Set-PSReadLineOption -EditMode Emacs
@@ -29,8 +30,11 @@ Set-PSReadLineOption -Colors @{
     InlinePrediction   = '#F8FF39'
 }
 
-
 # Autocompletion for arrow keys
+Remove-PSReadLineKeyHandler -Key Ctrl+C
+Remove-PSReadLineKeyHandler -Key Shift+Enter
+
+Set-PSReadLineKeyHandler -Key Ctrl+c, Ctrl+C -Function CancelLine
 Set-PSReadLineKeyHandler -Key Tab -Function MenuComplete
 Set-PSReadLineKeyHandler -Key UpArrow -Function HistorySearchBackward
 Set-PSReadLineKeyHandler -Key DownArrow -Function HistorySearchForward
@@ -38,8 +42,9 @@ Set-PSReadLineKeyHandler -Chord Ctrl+Shift+a, Ctrl+Shift+A -Function SelectAll
 Set-PSReadLineKeyHandler -Chord Ctrl+Shift+l, Ctrl+Shift+L -Function RevertLine
 Set-PSReadLineKeyHandler -Chord Ctrl+LeftArrow -Function BackwardWord
 Set-PSReadLineKeyHandler -Chord Ctrl+RightArrow -Function NextWord
+Set-PSReadLineKeyHandler -Chord Ctrl+Shift+Backspace -Function BackwardKillWord
 Set-PSReadLineKeyHandler -Chord Ctrl+Enter -Function AddLine
-
+Set-PSReadLineKeyHandler -Chord Ctrl+z, Ctral+Z -Function Undo
 
 # User Alias
 . $PSScriptRoot\Modules\user-aliases\alias.ps1
