@@ -73,18 +73,18 @@ function prompt {
 
     $pathCurrent = Get-Location | Split-Path -Leaf
     $branch = git branch --show-current 
-    $leftLength = $pathCurrent.Length + 9
+    $leftLength = $pathCurrent.Length + 12
     $rightLength = $branch.Length + 10
     $points = "•" * ($host.UI.RawUI.WindowSize.Width - $leftLength - $rightLength)
 
     $colorPoints = "${esc}[90m $points ${escEnd}"
-    $colorPathCurrent = "${esc}[30;102m $pathCurrent ${escEnd}"
+    $colorPathCurrent = "${esc}[30;102m 📂 $pathCurrent ${escEnd}"
     $colorBranch = "${esc}[30;1;102m $branch ${escEnd}"
 
     
     $customPrompt = "${curvaLeftTop} ${bgLeft}${bgLeftSecond}${bgLeftThird}${colorPathCurrent}${simbolStart}${colorPoints}"
-    $customPrompt += "${simbolEnd}${colorBranch}${bgRight}${bgRightSecond} ${curvaRightTop}`n"
-    $customPrompt += "${indicator} "
+    $customPrompt += "${simbolEnd}${colorBranch}${bgRight}${bgRightSecond} ${curvaRightTop}`n`n"
+    $customPrompt += " ${indicator} "
 
     "$customPrompt"
 }
