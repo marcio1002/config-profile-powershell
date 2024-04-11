@@ -88,7 +88,3 @@ function prompt {
 
 # User Alias
 . $PSScriptRoot\Modules\user-aliases\alias.ps1
-
-#
-$Global:MaximunBattery = 88
-$Global:MinimunBatterry = 30
