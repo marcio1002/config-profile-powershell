@@ -2,7 +2,24 @@
 Import-Module PSReadLine -RequiredVersion 2.3.5
 Import-Module TrustedPlatformModule
 
-Set-PSReadLineOption -ContinuationPrompt '-> '
+# Código ASCII para escape
+$esc = "`e"
+$escEnd = "`e[0m"
+# Simbolos
+$curvaLeftTop = "${esc}[90m┌─${escEnd}"
+$curvaRightTop = "${esc}[90m─┐${escEnd}"
+$indicator = "${esc}[96m➜${escEnd}"
+# Cores esquerda
+$simbolStart = "${esc}[92m${escEnd}"
+$bgLeft = "${esc}[92m░${escEnd}"
+$bgLeftSecond = "${esc}[92m▒${escEnd}"
+$bgLeftThird = "${esc}[37;42m ${escEnd}"
+# Cores direita
+$simbolEnd = "${esc}[92m${escEnd}";
+$bgRight = "${esc}[92;42m░${escEnd}"
+$bgRightSecond = "${esc}[32m▒${escEnd}"
+
+Set-PSReadLineOption -ContinuationPrompt "$indicator "
 Set-PSReadLineOption -HistoryNoDuplicates:$True
 Set-PSReadLineOption -HistorySearchCursorMovesToEnd:$True
 Set-PSReadLineOption -EditMode Emacs
@@ -50,32 +67,11 @@ Set-PSReadLineKeyHandler -Chord Ctrl+Enter -Function AddLine
 
 # Customização do prompt
 function prompt {
-    # Código ASCII para escape
-    $esc = "`e"
-    $escEnd = "`e[0m"
-
-    # Simbolos
-    $curvaLeftTop = "${esc}[90m┌─${escEnd}"
-    $curvaRightTop = "${esc}[90m─┐${escEnd}"
-    $indicator = "${esc}[96m➜${escEnd}"
-
-
-    # Cores esquerda
-    $simbolStart = "${esc}[92m►${escEnd}"
-    $bgLeft = "${esc}[92m░${escEnd}"
-    $bgLeftSecond = "${esc}[92m▒${escEnd}"
-    $bgLeftThird = "${esc}[37;42m ${escEnd}"
-    # Cores direita
-    $simbolEnd = "${esc}[92m◀${escEnd}";
-    $bgRight = "${esc}[92;42m░${escEnd}"
-    $bgRightSecond = "${esc}[32m▒${escEnd}"
-
-
     $pathCurrent = Get-Location | Split-Path -Leaf
     $branch = git branch --show-current 
-    $leftLength = $pathCurrent.Length + 12
+    $leftLength = $pathCurrent.Length + 10
     $rightLength = $branch.Length + 10
-    $points = "•" * ($host.UI.RawUI.WindowSize.Width - $leftLength - $rightLength)
+    $points = "•" * ((Get-Host).UI.RawUI.WindowSize.Width - $leftLength - $rightLength)
 
     $colorPoints = "${esc}[90m $points ${escEnd}"
     $colorPathCurrent = "${esc}[30;102m 📂 $pathCurrent ${escEnd}"
@@ -88,6 +84,7 @@ function prompt {
 
     "$customPrompt"
 }
+
 
 # User Alias
 . $PSScriptRoot\Modules\user-aliases\alias.ps1
