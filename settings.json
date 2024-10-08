@@ -1,0 +1,14 @@
+{
+ "defaults": 
+        {
+            "colorScheme": "Dracula",
+            "background": "#232D37",
+            "elevate": true,
+            "font": 
+            {
+                "size": 13.0
+            },
+            "opacity": 85,
+            "useAcrylic": false
+        },
+}
