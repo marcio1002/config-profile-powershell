@@ -3,6 +3,7 @@
 #Configuration Autocompletion keys
 Import-Module PSReadLine -RequiredVersion 2.3.6
 Import-Module TrustedPlatformModule
+Import-Module Az.Tools.Predictor
 Import-Module MavenAutoCompletion -RequiredVersion 0.2
 Import-Module -Name Microsoft.WinGet.CommandNotFound
 
@@ -24,12 +25,12 @@ $bgRight = "${esc}[92;42m░${escEnd}"
 $bgRightSecond = "${esc}[32m▒${escEnd}"
 
 Set-PSReadLineOption -ContinuationPrompt "$indicator "
-Set-PSReadLineOption -PredictionViewStyle InlineView
+Set-PSReadLineOption -PredictionViewStyle ListView
 Set-PSReadLineOption -HistoryNoDuplicates:$True
 Set-PSReadLineOption -HistorySearchCursorMovesToEnd:$True
 Set-PSReadLineOption -EditMode Emacs
 Set-PSReadLineOption -ShowToolTips:$True
-Set-PSReadLineOption -PredictionSource History
+Set-PSReadLineOption -PredictionSource HistoryAndPlugin
 Set-PSReadLineOption -ViModeIndicator Script
 Set-PSReadLineOption -BellStyle Visual
 Set-PSReadLineOption -Colors @{
@@ -92,16 +93,16 @@ function prompt {
 
 # USER ALIAS
 (Test-Path "$PSScriptRoot\Modules\user-aliases\alias.ps1" && (. "$PSScriptRoot\Modules\user-aliases\alias.ps1")) >> $null
-
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 # POWERSHELL 5
+
 #Configuration Autocompletion keys
 Import-Module PSReadLine -RequiredVersion 2.3.6
 Import-Module TrustedPlatformModule
 
 Set-PSReadLineOption -ContinuationPrompt "$indicator "
-Set-PSReadLineOption -PredictionViewStyle InlineView
+Set-PSReadLineOption -PredictionViewStyle ListView
 Set-PSReadLineOption -HistoryNoDuplicates:$True
 Set-PSReadLineOption -HistorySearchCursorMovesToEnd:$True
 Set-PSReadLineOption -EditMode Emacs
