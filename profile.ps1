@@ -1,8 +1,10 @@
 ## POWERSHELL 7
 
 #Configuration Autocompletion keys
-Import-Module PSReadLine -RequiredVersion 2.3.5
+Import-Module PSReadLine -RequiredVersion 2.3.6
 Import-Module TrustedPlatformModule
+Import-Module MavenAutoCompletion -RequiredVersion 0.2
+Import-Module -Name Microsoft.WinGet.CommandNotFound
 
 # Código ASCII para escape
 $esc = "`e"
@@ -22,6 +24,7 @@ $bgRight = "${esc}[92;42m░${escEnd}"
 $bgRightSecond = "${esc}[32m▒${escEnd}"
 
 Set-PSReadLineOption -ContinuationPrompt "$indicator "
+Set-PSReadLineOption -PredictionViewStyle InlineView
 Set-PSReadLineOption -HistoryNoDuplicates:$True
 Set-PSReadLineOption -HistorySearchCursorMovesToEnd:$True
 Set-PSReadLineOption -EditMode Emacs
@@ -87,9 +90,8 @@ function prompt {
     "$customPrompt"
 }
 
-
-# User Alias
-. $PSScriptRoot\Modules\user-aliases\alias.ps1
+# USER ALIAS
+(Test-Path "$PSScriptRoot\Modules\user-aliases\alias.ps1" && (. "$PSScriptRoot\Modules\user-aliases\alias.ps1")) >> $null
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -99,6 +101,7 @@ Import-Module PSReadLine -RequiredVersion 2.3.6
 Import-Module TrustedPlatformModule
 
 Set-PSReadLineOption -ContinuationPrompt "$indicator "
+Set-PSReadLineOption -PredictionViewStyle InlineView
 Set-PSReadLineOption -HistoryNoDuplicates:$True
 Set-PSReadLineOption -HistorySearchCursorMovesToEnd:$True
 Set-PSReadLineOption -EditMode Emacs
@@ -152,7 +155,3 @@ function prompt {
 
     "$customPrompt"
 }
-
-
-# User Alias
-# . $PSScriptRoot\Modules\user-aliases\alias.ps1
