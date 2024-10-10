@@ -1,14 +1,13 @@
 {
- "defaults": 
-        {
-            "colorScheme": "Dracula",
+ "defaults": {
             "background": "#232D37",
+            "colorScheme": "Dracula",
             "elevate": true,
-            "font": 
-            {
-                "size": 13.0
+            "font": {
+                "size": 13.0,
+                "face": "Hack Nerd Font"
             },
             "opacity": 85,
             "useAcrylic": false
-        },
+    },
 }
