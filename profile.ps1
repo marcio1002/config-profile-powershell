@@ -30,6 +30,33 @@ $bgRightSecondWithBranch = "${esc}[34m▒${escEnd}"
 $bgRightThird = "${esc}[37;42m ${escEnd}"
 $bgRightThirdWithBranch = "${esc}[44m ${escEnd}"
 
+# Customização do prompt
+function prompt {
+    $pathCurrent = Get-Location | Split-Path -Leaf
+    $branch = if (git branch --show-current) { git branch --show-current } else { "" }
+    
+    $leftLength = $pathCurrent.Length + 11
+    $rightLength = $branch.Length + 12
+    $points = "•" * ((Get-Host).UI.RawUI.WindowSize.Width - $leftLength - $rightLength)
+
+    $colorPoints = "${esc}[90m $points ${escEnd}"
+    $colorPathCurrent = "${esc}[30;102m 📂 ${pathCurrent} ${escEnd}"
+    $colorBranch = "${esc}[88;44m ${branch} ${escEnd}"
+    $colorNoBranch = "${esc}[30;102m  ${escEnd}"
+    
+    $customPrompt = "${curvaLeftTop} ${bgLeft}${bgLeftSecond}${bgLeftThird}${colorPathCurrent}${simbolStart}${colorPoints}"
+    $customPrompt += if ($branch) {
+        "${simbolEndWithBranch}${colorBranch}${bgRightThirdWithBranch}${bgRightSecondWithBranch}${bgRightWithBranch} ${curvaRightTop}`n`n"
+    }
+    else {
+        "${simbolEnd}${colorNoBranch}${bgRightThird}${bgRightSecond}${bgRight} ${curvaRightTop}`n`n"
+    }
+    $customPrompt += " ${indicator} "
+
+    "$customPrompt"
+}
+
+# PSReadLine Configs
 Set-PSReadLineOption -ContinuationPrompt "$indicator "
 Set-PSReadLineOption -PredictionViewStyle ListView
 Set-PSReadLineOption -HistoryNoDuplicates:$True
@@ -76,33 +103,6 @@ Set-PSReadLineKeyHandler -Chord Ctrl+RightArrow -Function NextWord
 Set-PSReadLineKeyHandler -Chord Ctrl+Shift+Backspace -Function BackwardKillWord
 Set-PSReadLineKeyHandler -Chord Ctrl+Enter -Function AddLine
 
-
-# Customização do prompt
-function prompt {
-    $pathCurrent = Get-Location | Split-Path -Leaf
-    $branch = if (git branch --show-current) { git branch --show-current } else { "" }
-    
-    $leftLength = $pathCurrent.Length + 11
-    $rightLength = $branch.Length + 12
-    $points = "•" * ((Get-Host).UI.RawUI.WindowSize.Width - $leftLength - $rightLength)
-
-    $colorPoints = "${esc}[90m $points ${escEnd}"
-    $colorPathCurrent = "${esc}[30;102m 📂 ${pathCurrent} ${escEnd}"
-    $colorBranch = "${esc}[88;44m ${branch} ${escEnd}"
-    $colorNoBranch = "${esc}[30;102m  ${escEnd}"
-    
-    $customPrompt = "${curvaLeftTop} ${bgLeft}${bgLeftSecond}${bgLeftThird}${colorPathCurrent}${simbolStart}${colorPoints}"
-    $customPrompt += if ($branch) {
-        "${simbolEndWithBranch}${colorBranch}${bgRightThirdWithBranch}${bgRightSecondWithBranch}${bgRightWithBranch} ${curvaRightTop}`n`n"
-    }
-    else {
-        "${simbolEnd}${colorNoBranch}${bgRightThird}${bgRightSecond}${bgRight} ${curvaRightTop}`n`n"
-    }
-    $customPrompt += " ${indicator} "
-
-    "$customPrompt"
-}
-
 # USER ALIAS
 $userAlias = Join-Path $PSScriptRoot "\Modules\user-aliases\alias.ps1";
 (Test-Path $userAlias && (. $userAlias)) >> $null
@@ -128,6 +128,41 @@ Import-Module TrustedPlatformModule
 # Import-Module MavenAutoCompletion -RequiredVersion 0.2
 Import-Module -Name kmt.winget.autocomplete
 
+# Código ASCII para escape
+$esc = [char]0x1b
+$escEnd = "$([char]0x1b)[0m"
+# Simbolos
+$curvaLeftTop = "${esc}[90m|-${escEnd}"
+$curvaRightTop = "${esc}[90m-|${escEnd}"
+$indicator = "${esc}[96m->${escEnd}"
+# Cores esquerda
+$simbolStart = "${esc}[30;42m ${escEnd}"
+$bgLeftThird = "${esc}[37;42m ${escEnd}"
+# Cores direita
+$simbolEnd = "${esc}[88;44m ${escEnd}";
+$bgRight = "${esc}[88;44m ${escEnd}"
+
+# Customização do prompt
+function prompt {
+  $pathCurrent = Get-Location | Split-Path -Leaf
+  $branch = if (git branch --show-current) { git branch --show-current } else { "" }
+    
+  $leftLength = $pathCurrent.Length + 6
+  $rightLength = $branch.Length + 6
+  $points = "-" * ((Get-Host).UI.RawUI.WindowSize.Width - $leftLength - $rightLength)
+
+  $colorPoints = "${esc}[90m $points ${escEnd}"
+  $colorPathCurrent = "${esc}[30;102m${pathCurrent}${escEnd}"
+  $colorBranch = "${esc}[88;44m${branch}${escEnd}"
+    
+  $customPrompt = "${curvaLeftTop} ${bgLeftThird}${colorPathCurrent}${simbolStart}${colorPoints}"
+  $customPrompt += if ($branch) { "${simbolEnd}${colorBranch}${bgRight} ${curvaRightTop}`n`n" } else { "${curvaRightTop}`n`n" }
+  $customPrompt += " ${indicator} "
+
+  "$customPrompt"
+}
+
+# PSReadLine Configs
 Set-PSReadLineOption -ContinuationPrompt "> "
 Set-PSReadLineOption -PredictionViewStyle ListView
 Set-PSReadLineOption -HistoryNoDuplicates:$True
@@ -156,20 +191,6 @@ Set-PSReadLineOption -Colors @{
   InlinePrediction   = '#F8FF39'
 }
 
-# Código ASCII para escape
-$esc = [char]0x1b
-$escEnd = "$([char]0x1b)[0m"
-# Simbolos
-$curvaLeftTop = "${esc}[90m|-${escEnd}"
-$curvaRightTop = "${esc}[90m-|${escEnd}"
-$indicator = "${esc}[96m->${escEnd}"
-# Cores esquerda
-$simbolStart = "${esc}[30;42m ${escEnd}"
-$bgLeftThird = "${esc}[37;42m ${escEnd}"
-# Cores direita
-$simbolEnd = "${esc}[88;44m ${escEnd}";
-$bgRight = "${esc}[88;44m ${escEnd}"
-
 # Autocompletion for arrow keys
 Remove-PSReadLineKeyHandler -Key Ctrl+C
 Remove-PSReadLineKeyHandler -Key Shift+Enter
@@ -187,27 +208,6 @@ Set-PSReadLineKeyHandler -Chord Ctrl+LeftArrow -Function BackwardWord
 Set-PSReadLineKeyHandler -Chord Ctrl+RightArrow -Function NextWord
 Set-PSReadLineKeyHandler -Chord Ctrl+Shift+Backspace -Function BackwardKillWord
 Set-PSReadLineKeyHandler -Chord Ctrl+Enter -Function AddLine
-
-
-# Customização do prompt
-function prompt {
-  $pathCurrent = Get-Location | Split-Path -Leaf
-  $branch = if (git branch --show-current) { git branch --show-current } else { "" }
-    
-  $leftLength = $pathCurrent.Length + 6
-  $rightLength = $branch.Length + 6
-  $points = "-" * ((Get-Host).UI.RawUI.WindowSize.Width - $leftLength - $rightLength)
-
-  $colorPoints = "${esc}[90m $points ${escEnd}"
-  $colorPathCurrent = "${esc}[30;102m${pathCurrent}${escEnd}"
-  $colorBranch = "${esc}[88;44m${branch}${escEnd}"
-    
-  $customPrompt = "${curvaLeftTop} ${bgLeftThird}${colorPathCurrent}${simbolStart}${colorPoints}"
-  $customPrompt += if ($branch) { "${simbolEnd}${colorBranch}${bgRight} ${curvaRightTop}`n`n" } else { "${curvaRightTop}`n`n" }
-  $customPrompt += " ${indicator} "
-
-  "$customPrompt"
-}
 
 # USER ALIAS
 $userAlias = Join-Path $PSScriptRoot "\Modules\user-aliases\alias.ps1";
