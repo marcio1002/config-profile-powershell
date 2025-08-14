@@ -2,10 +2,11 @@
 
 #Configuration Autocompletion keys
 Import-Module PSReadLine -RequiredVersion 2.3.6
-Import-Module TrustedPlatformModule
 Import-Module Az.Tools.Predictor
+Import-Module TrustedPlatformModule
 Import-Module MavenAutoCompletion -RequiredVersion 0.2
-Import-Module -Name Microsoft.WinGet.CommandNotFound
+Import-Module -Name kmt.winget.autocomplete
+Import-Module -Name "C:\Users\marcio.alemao_satsol\Documents\scripts\javaVersionManager"
 
 # Código ASCII para escape
 $esc = "`e"
@@ -21,8 +22,11 @@ $bgLeftSecond = "${esc}[92m▒${escEnd}"
 $bgLeftThird = "${esc}[37;42m ${escEnd}"
 # Cores direita
 $simbolEnd = "${esc}[92m${escEnd}";
-$bgRight = "${esc}[92;42m░${escEnd}"
-$bgRightSecond = "${esc}[32m▒${escEnd}"
+$simbolEndWithBranch = "${esc}[34m${escEnd}";
+$bgRight = "${esc}[32m▒${escEnd}"
+$bgRightWithBranch = "${esc}[34m▒${escEnd}"
+$bgRightSecond = "${esc}[92;42m░${escEnd}"
+$bgRightSecondWithBranch = "${esc}[34m░${escEnd}"
 
 Set-PSReadLineOption -ContinuationPrompt "$indicator "
 Set-PSReadLineOption -PredictionViewStyle ListView
@@ -74,25 +78,43 @@ Set-PSReadLineKeyHandler -Chord Ctrl+Enter -Function AddLine
 # Customização do prompt
 function prompt {
     $pathCurrent = Get-Location | Split-Path -Leaf
-    $branch = git branch --show-current 
+    $branch = if (git branch --show-current) { git branch --show-current } else { "" }
+    
     $leftLength = $pathCurrent.Length + 11
     $rightLength = $branch.Length + 11
     $points = "•" * ((Get-Host).UI.RawUI.WindowSize.Width - $leftLength - $rightLength)
 
     $colorPoints = "${esc}[90m $points ${escEnd}"
-    $colorPathCurrent = "${esc}[30;102m 📂 $pathCurrent ${escEnd}"
-    $colorBranch = "${esc}[30;1;102m $branch ${escEnd}"
-
+    $colorPathCurrent = "${esc}[30;102m 📂 ${pathCurrent} ${escEnd}"
+    $colorBranch = "${esc}[88;44m ${branch} ${escEnd}"
     
     $customPrompt = "${curvaLeftTop} ${bgLeft}${bgLeftSecond}${bgLeftThird}${colorPathCurrent}${simbolStart}${colorPoints}"
-    $customPrompt += "${simbolEnd}${colorBranch}${bgRight}${bgRightSecond} ${curvaRightTop}`n`n"
+    $customPrompt += if ($branch) {
+        "${simbolEndWithBranch}${colorBranch}${bgRightWithBranch}${bgRightSecondWithBranch} ${curvaRightTop}`n`n"
+    }
+    else {
+        "${simbolEnd}${bgRight}${bgRightSecond} ${curvaRightTop}`n`n"
+    }
     $customPrompt += " ${indicator} "
 
     "$customPrompt"
 }
 
 # USER ALIAS
-(Test-Path "$PSScriptRoot\Modules\user-aliases\alias.ps1" && (. "$PSScriptRoot\Modules\user-aliases\alias.ps1")) >> $null
+$userAlias = Join-Path $PSScriptRoot "\Modules\user-aliases\alias.ps1";
+(Test-Path $userAlias && (. $userAlias)) >> $null
+
+
+# JAVA VERSION MANAGER
+if (-not $Global:JavaVersions) {
+    $Global:JavaVersions = @{
+        jdk8  = 'C:\Program Files\Java\jdk1.8.0_211'
+        jdk11 = 'C:\Program Files\Microsoft\jdk-11.0.27.6-hotspot'
+        jdk17 = 'C:\Program Files\Microsoft\jdk-17.0.15.6-hotspot'
+        jdk22 = 'C:\Program Files\OpenJDK\jdk-22.0.2'
+        jdk24 = 'C:\Program Files\Java\jdk-24'
+    }
+}
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 # POWERSHELL 5
