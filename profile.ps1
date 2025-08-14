@@ -122,8 +122,10 @@ if (-not $Global:JavaVersions) {
 #Configuration Autocompletion keys
 Import-Module PSReadLine -RequiredVersion 2.3.6
 Import-Module TrustedPlatformModule
+# Import-Module MavenAutoCompletion -RequiredVersion 0.2
+Import-Module -Name kmt.winget.autocomplete
 
-Set-PSReadLineOption -ContinuationPrompt "$indicator "
+Set-PSReadLineOption -ContinuationPrompt "> "
 Set-PSReadLineOption -PredictionViewStyle ListView
 Set-PSReadLineOption -HistoryNoDuplicates:$True
 Set-PSReadLineOption -HistorySearchCursorMovesToEnd:$True
@@ -133,23 +135,37 @@ Set-PSReadLineOption -PredictionSource History
 Set-PSReadLineOption -ViModeIndicator Script
 Set-PSReadLineOption -BellStyle Visual
 Set-PSReadLineOption -Colors @{
-    ContinuationPrompt = '#ffffff'
-    Emphasis           = '#3ABAD0'
-    ERROR              = '#FF3B18'
-    Selection          = '#64FF59'
-    Default            = '#ffffff'
-    Comment            = '#ffffff'
-    Keyword            = '#9D2CFF'
-    String             = '#FFB230'
-    Operator           = '#2FFF9F'
-    Command            = '#64FF59'
-    Variable           = '#A84FFF'
-    Parameter          = '#F8FF39'
-    Type               = '#AF0917'
-    Number             = '#CA41FF'
-    Member             = '#818CFF'
-    InlinePrediction   = '#F8FF39'
+  ContinuationPrompt = '#ffffff'
+  Emphasis           = '#3ABAD0'
+  ERROR              = '#FF3B18'
+  Selection          = '#64FF59'
+  Default            = '#ffffff'
+  Comment            = '#ffffff'
+  Keyword            = '#9D2CFF'
+  String             = '#FFB230'
+  Operator           = '#2FFF9F'
+  Command            = '#64FF59'
+  Variable           = '#A84FFF'
+  Parameter          = '#F8FF39'
+  Type               = '#AF0917'
+  Number             = '#CA41FF'
+  Member             = '#818CFF'
+  InlinePrediction   = '#F8FF39'
 }
+
+# Código ASCII para escape
+$esc = [char]0x1b
+$escEnd = "$([char]0x1b)[0m"
+# Simbolos
+$curvaLeftTop = "${esc}[90m|-${escEnd}"
+$curvaRightTop = "${esc}[90m-|${escEnd}"
+$indicator = "${esc}[96m->${escEnd}"
+# Cores esquerda
+$simbolStart = "${esc}[30;42m ${escEnd}"
+$bgLeftThird = "${esc}[37;42m ${escEnd}"
+# Cores direita
+$simbolEnd = "${esc}[88;44m ${escEnd}";
+$bgRight = "${esc}[88;44m ${escEnd}"
 
 # Autocompletion for arrow keys
 Remove-PSReadLineKeyHandler -Key Ctrl+C
@@ -172,9 +188,26 @@ Set-PSReadLineKeyHandler -Chord Ctrl+Enter -Function AddLine
 
 # Customização do prompt
 function prompt {
-    $pathCurrent = Get-Location | Split-Path -Leaf
+  $pathCurrent = Get-Location | Split-Path -Leaf
+  $branch = if (git branch --show-current) { git branch --show-current } else { "" }
+    
+  $leftLength = $pathCurrent.Length + 6
+  $rightLength = $branch.Length + 6
+  $points = "-" * ((Get-Host).UI.RawUI.WindowSize.Width - $leftLength - $rightLength)
 
-    $customPrompt += "$pathCurrent > "
+  $colorPoints = "${esc}[90m $points ${escEnd}"
+  $colorPathCurrent = "${esc}[30;102m${pathCurrent}${escEnd}"
+  $colorBranch = "${esc}[88;44m${branch}${escEnd}"
+    
+  $customPrompt = "${curvaLeftTop} ${bgLeftThird}${colorPathCurrent}${simbolStart}${colorPoints}"
+  $customPrompt += if ($branch) { "${simbolEnd}${colorBranch}${bgRight} ${curvaRightTop}`n`n" } else { "${curvaRightTop}`n`n" }
+  $customPrompt += " ${indicator} "
 
-    "$customPrompt"
+  "$customPrompt"
+}
+
+# USER ALIAS
+$userAlias = Join-Path $PSScriptRoot "\Modules\user-aliases\alias.ps1";
+if (Test-Path $userAlias) {
+  . $userAlias
 }
