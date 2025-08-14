@@ -23,10 +23,12 @@ $bgLeftThird = "${esc}[37;42m ${escEnd}"
 # Cores direita
 $simbolEnd = "${esc}[92m${escEnd}";
 $simbolEndWithBranch = "${esc}[34m${escEnd}";
-$bgRight = "${esc}[32m▒${escEnd}"
-$bgRightWithBranch = "${esc}[34m▒${escEnd}"
-$bgRightSecond = "${esc}[92;42m░${escEnd}"
-$bgRightSecondWithBranch = "${esc}[34m░${escEnd}"
+$bgRight = "${esc}[32m░${escEnd}"
+$bgRightWithBranch = "${esc}[34m░${escEnd}"
+$bgRightSecond = "${esc}[32m▒${escEnd}"
+$bgRightSecondWithBranch = "${esc}[34m▒${escEnd}"
+$bgRightThird = "${esc}[37;42m ${escEnd}"
+$bgRightThirdWithBranch = "${esc}[44m ${escEnd}"
 
 Set-PSReadLineOption -ContinuationPrompt "$indicator "
 Set-PSReadLineOption -PredictionViewStyle ListView
@@ -81,7 +83,7 @@ function prompt {
     $branch = if (git branch --show-current) { git branch --show-current } else { "" }
     
     $leftLength = $pathCurrent.Length + 11
-    $rightLength = $branch.Length + 11
+    $rightLength = $branch.Length + 12
     $points = "•" * ((Get-Host).UI.RawUI.WindowSize.Width - $leftLength - $rightLength)
 
     $colorPoints = "${esc}[90m $points ${escEnd}"
@@ -91,15 +93,16 @@ function prompt {
     
     $customPrompt = "${curvaLeftTop} ${bgLeft}${bgLeftSecond}${bgLeftThird}${colorPathCurrent}${simbolStart}${colorPoints}"
     $customPrompt += if ($branch) {
-        "${simbolEndWithBranch}${colorBranch}${bgRightWithBranch}${bgRightSecondWithBranch} ${curvaRightTop}`n`n"
+        "${simbolEndWithBranch}${colorBranch}${bgRightThirdWithBranch}${bgRightSecondWithBranch}${bgRightWithBranch} ${curvaRightTop}`n`n"
     }
     else {
-        "${simbolEnd}${colorNoBranch}${bgRight}${bgRightSecond} ${curvaRightTop}`n`n"
+        "${simbolEnd}${colorNoBranch}${bgRightThird}${bgRightSecond}${bgRight} ${curvaRightTop}`n`n"
     }
     $customPrompt += " ${indicator} "
 
     "$customPrompt"
 }
+
 # USER ALIAS
 $userAlias = Join-Path $PSScriptRoot "\Modules\user-aliases\alias.ps1";
 (Test-Path $userAlias && (. $userAlias)) >> $null
