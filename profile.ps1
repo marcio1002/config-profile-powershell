@@ -87,19 +87,19 @@ function prompt {
     $colorPoints = "${esc}[90m $points ${escEnd}"
     $colorPathCurrent = "${esc}[30;102m 📂 ${pathCurrent} ${escEnd}"
     $colorBranch = "${esc}[88;44m ${branch} ${escEnd}"
+    $colorNoBranch = "${esc}[30;102m  ${escEnd}"
     
     $customPrompt = "${curvaLeftTop} ${bgLeft}${bgLeftSecond}${bgLeftThird}${colorPathCurrent}${simbolStart}${colorPoints}"
     $customPrompt += if ($branch) {
         "${simbolEndWithBranch}${colorBranch}${bgRightWithBranch}${bgRightSecondWithBranch} ${curvaRightTop}`n`n"
     }
     else {
-        "${simbolEnd}${bgRight}${bgRightSecond} ${curvaRightTop}`n`n"
+        "${simbolEnd}${colorNoBranch}${bgRight}${bgRightSecond} ${curvaRightTop}`n`n"
     }
     $customPrompt += " ${indicator} "
 
     "$customPrompt"
 }
-
 # USER ALIAS
 $userAlias = Join-Path $PSScriptRoot "\Modules\user-aliases\alias.ps1";
 (Test-Path $userAlias && (. $userAlias)) >> $null
